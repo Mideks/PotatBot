@@ -29,11 +29,34 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.js" />
+    <Content Include="config.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="config.json">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="install.bat" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="scenes\addingSettings.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="scenes\mainMenu.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="scenes\editPoll.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="scenes\settingsMenu.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="sendingMode.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="start.bat" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="scenes\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
 </Project>
