@@ -1,15 +1,71 @@
 'use strict';
 const Telegraf = require('telegraf')
-const config = require("./config.json")
+const Markup = require('telegraf/markup');
+const session = require('telegraf/session')
+const Stage = require('telegraf/stage')
+const Scene = require('telegraf/scenes/base')
 
-const bot = new Telegraf(config.bot_token);
+const Config = require("./Config")
+const sendingMode = require('./sendingMode')
 
-let messageToDeleteID = -1
+const config = new Config();
+config.read()
+
+const stage = new Stage([], {"default": 'mainMenu' })
+stage.register(require('./scenes/mainMenu'))
+stage.register(require('./scenes/editPoll'))
+stage.register(require('./scenes/settings'))
+stage.register(require('./scenes/addingSettings'))
+
+
+const bot = new Telegraf(config.data.bot_token);
+bot.use(session())
+bot.use(stage.middleware())
+
+
+let messageToDeleteID = null
+
+const sendPoll = async (ctx) => {
+	let p = await ctx.replyWithPoll(config.data.poll.question, config.data.poll.options, { disable_notification: config.data.poll.disable_notification })
+	messageToDeleteID = p.message_id
+}
+
+const deleteEndPattern = (ctx) => {
+	const pattern = config.data.end_pattern.text
+	const msg = ctx.channelPost.text.replace(new RegExp(pattern + "$"), "")
+	ctx.telegram.editMessageText(ctx.channelPost.chat.id, ctx.channelPost.message_id, null, msg)
+}
+
 bot.on("channel_post", async (ctx) => {
-	let pattern = config.end_pattern.text
+	const pattern = config.data.end_pattern.text
 
-	// åñëè true -- çíà÷èò ïàòòåðí íóæåí äëÿ ñîçäàíèÿ îïðîñà, false -- äëÿ åãî îòñóòñòâèÿ
-	let needPoll = !config.end_pattern.for_post_poll;
+	const mode = config.data.sending_poll.mode
+	if (mode == sendingMode.never) return;
+	if (mode == sendingMode.allways) await sendPoll(ctx)
+	if (mode == sendingMode.once) {
+		config.data.sending_poll.mode = sendingMode.never
+		await sendPoll(ctx)
+	}
+
+	if (mode == sendingMode.onRequest) {
+		if (ctx.channelPost.text.endsWith(pattern)) {
+			deleteEndPattern(ctx)
+			await sendPoll(ctx)
+        }
+	}
+
+	if (mode == sendingMode.cancleOnRequest) {
+		if (ctx.channelPost.text.endsWith(pattern))
+			deleteEndPattern(ctx)
+		else await sendPoll(ctx)
+    }
+})
+
+bot.on("channel_post", async (ctx) => {
+	let pattern = config.data.end_pattern.text
+
+	// ÐµÑÐ»Ð¸ true -- Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ Ð¿Ð°Ñ‚Ñ‚ÐµÑ€Ð½ Ð½ÑƒÐ¶ÐµÐ½ Ð´Ð»Ñ ÑÐ¾Ð·Ð´Ð°Ð½Ð¸Ñ Ð¾Ð¿Ñ€Ð¾ÑÐ°, false -- Ð´Ð»Ñ ÐµÐ³Ð¾ Ð¾Ñ‚ÑÑƒÑ‚ÑÑ‚Ð²Ð¸Ñ
+	let needPoll = !config.data.end_pattern.for_post_poll;
 	if (ctx.channelPost.text.endsWith(pattern)) {
 		let msg = ctx.channelPost.text.replace(new RegExp(pattern + "$"), "")
 		ctx.telegram.editMessageText(ctx.channelPost.chat.id, ctx.channelPost.message_id, null, msg)
@@ -17,21 +73,26 @@ bot.on("channel_post", async (ctx) => {
 	}
 
 	if (needPoll) {
-		let p = await ctx.replyWithPoll(config.poll.question, config.poll.options, { disable_notification: config.poll.disable_notification })
+		let p = await ctx.replyWithPoll(config.data.poll.question, config.data.poll.options, { disable_notification: config.data.poll.disable_notification })
 		messageToDeleteID = p.message_id
 	}
 
 })
+
 bot.on("message", (ctx, next) => {
-	if (config.poll.delete_comments &&
+	if (config.data.poll.delete_comments &&
 		ctx.message.is_automatic_forward &&
-		ctx.message.forward_from_message_id == messageToDeleteID)
-	{
+		ctx.message.forward_from_message_id == messageToDeleteID) {
 		ctx.deleteMessage()
-		messageToDeleteID = -1
+		messageToDeleteID = null
 	}
 	return next()
 })
+
+bot.start((ctx) => {
+	ctx.scene.enter("mainMenu")
+})
+
 
 bot.launch().then(() => console.log("Bot started!"));
 bot.catch((err, ctx) => {
@@ -39,6 +100,7 @@ bot.catch((err, ctx) => {
 })
 process.on('SIGINT', function () {
 	console.log("STOPPED bot.")
+	config.save()
 	process.exit(1)
 })
 
