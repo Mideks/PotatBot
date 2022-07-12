@@ -1,0 +1,13 @@
+{
+  "bot_token": "5202023961:AAH4CLk8zfFYCFJS7PoK5zVyk6szc2g7Oqw",
+  "poll": {
+    "question": "tito?",
+    "options": [ "tito", "no, tete!" ],
+    "disable_notification": true,
+    "delete_comments": true
+  },
+  "end_pattern" : {
+    "text": "\n!",
+    "for_post_poll": false
+  }
+}

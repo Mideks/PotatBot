@@ -1,0 +1,12 @@
+{
+  "name": "potat-bot",
+  "version": "0.0.0",
+  "description": "PotatBot",
+  "main": "app.js",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "telegraf": "3.39"
+  }
+}
