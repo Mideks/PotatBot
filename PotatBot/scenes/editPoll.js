@@ -40,7 +40,7 @@ editPoll.on('poll', async (ctx, next) => {
 		delete ctx.session.enterMessage
 	}, 2000)
 	
-	ctx.scene.enter("editPolls")
+	ctx.scene.enter("editPollsMenu")
 })
 
 editPoll.on("message", async (ctx, next) => {
@@ -63,7 +63,7 @@ editPoll.action("command:cancel", async (ctx) => {
 	ctx.telegram.deleteMessage(pollMessage.chat.id, pollMessage.message_id)
 	delete ctx.session.pollMessage
 
-	ctx.scene.enter("editPolls")
+	ctx.scene.enter("editPollsMenu")
 })
 
 module.exports = editPoll

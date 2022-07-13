@@ -19,14 +19,14 @@ mainMenu.action("command:settings", async (ctx) => {
 	ctx.scene.enter('settings')
 })
 
-mainMenu.action("command:edit_poll", async (ctx) => {
+/*mainMenu.action("command:edit_poll", async (ctx) => {
 	await ctx.answerCbQuery()
 	ctx.scene.enter('editPoll')
-})
+})*/
 
 mainMenu.action("command:edit_polls", async (ctx) => {
 	await ctx.answerCbQuery()
-	ctx.scene.enter('editPolls')
+	ctx.scene.enter('editPollsMenu')
 })
 
 module.exports = mainMenu

@@ -2,10 +2,10 @@
 const Scene = require('telegraf/scenes/base')
 
 const editPollsMenu = (ctx) => {
-	const keyboard = [[Markup.callbackButton('➕ Создать новый', 'command:comments')]]
+	const keyboard = [[Markup.callbackButton('➕ Создать новый', 'command:new_poll')]]
 
 	ctx.config.data.polls.forEach((e, i) => {
-		keyboard.push([Markup.callbackButton(e.question, 'command:editPoll:' + i)])
+		keyboard.push([Markup.callbackButton(e.question, 'command:edit_poll:' + i)])
 	})
 	
 	keyboard.push([Markup.callbackButton('< Назад', 'command:back')])
@@ -18,7 +18,7 @@ scene.enter(async (ctx) => {
 	const args =
 		[
 			'Выберите один из существующих опросов для редактирования или создайте новый...',
-			editPollsMenu(ctx)
+			editPollsMenu(ctx).extra()
 		]
 
 	if (ctx.updateType == 'callback_query') await ctx.editMessageText(...args)
@@ -26,12 +26,12 @@ scene.enter(async (ctx) => {
 	
 })
 
-scene.action('command:newPoll', async ctx => {
+scene.action('command:new_poll', async ctx => {
 	await ctx.answerCbQuery()
 	ctx.scene.enter("newPoll")
 })
 
-scene.action('command:editPoll:(?<pollIndex>\d+)', async ctx => {
+scene.action('command:edit_poll:(?<pollIndex>\d+)', async ctx => {
 	await ctx.answerCbQuery()
 	ctx.session.pollIndex = ctx.match.groups.pollIndex
 	ctx.scene.enter("editPoll")

@@ -20,7 +20,7 @@ newPoll.on('poll', async (ctx, next) => {
 	ctx.config.data.polls.push(poll)
 
 	const msg = await ctx.reply("Новый опрос создан")
-	ctx.scene.enter("editPolls")
+	ctx.scene.enter("editPollsMenu")
 
 	setTimeout(() => {
 		const enterMessage = ctx.session.enterMessage
@@ -51,7 +51,7 @@ newPoll.on("message", async (ctx, next) => {
 
 newPoll.action("command:cancel", async (ctx) => {
 	await ctx.answerCbQuery()
-	ctx.scene.enter("editPolls")
+	ctx.scene.enter("editPollsMenu")
 })
 
 module.exports = newPoll

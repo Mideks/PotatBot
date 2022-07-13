@@ -24,11 +24,11 @@ scene.action('command:activate', async (ctx) => {
 scene.action('command:delete', async (ctx) => {
 	await ctx.answerCbQuery()
 	ctx.config.data.polls.splice(ctx.session.pollIndex, 1)
-	ctx.scene.enter("editPolls")
+	ctx.scene.enter("editPollsMenu")
 })
 
 scene.action('command:back', async (ctx) => {
 	await ctx.answerCbQuery()
-	ctx.scene.enter("editPolls")
+	ctx.scene.enter("editPollsMenu")
 })
 module.exports = scene
