@@ -2,7 +2,7 @@
 const Scene = require('telegraf/scenes/base')
 
 const addingSettingsMenu = (ctx) => {
-	const mode = config.data.sending_poll.mode
+	const mode = ctx.config.data.sending_poll_settings.mode
 
 	return Markup.inlineKeyboard([
 		[
@@ -32,8 +32,8 @@ addingSettings.enter((ctx) => {
 })
 addingSettings.action(/command:change_mode:(?<mode>\d)/, async (ctx) => {
 	await ctx.answerCbQuery()
-	if (config.data.sending_poll.mode == ctx.match.groups.mode) return
-	config.data.sending_poll.mode = ctx.match.groups.mode
+	if (ctx.config.data.sending_poll_settings.mode == ctx.match.groups.mode) return
+	ctx.config.data.sending_poll_settings.mode = ctx.match.groups.mode
 	ctx.editMessageReplyMarkup(addingSettingsMenu(ctx))
 })
 
@@ -42,3 +42,5 @@ addingSettings.action('command:back', async (ctx) => {
 	await ctx.answerCbQuery()
 	ctx.scene.enter("settings")
 })
+
+module.exports = addingSettings

@@ -10,7 +10,7 @@ class Config {
     }
 
     save() {
-        fs.writeFileSync(this.configFilePath, JSON.stringify(this.data,null,4))
+        fs.writeFileSync(this.configFilePath, JSON.stringify(this.data,null,2))
     }
     read() {
         let text = fs.readFileSync(this.configFilePath);

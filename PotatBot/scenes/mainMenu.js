@@ -1,14 +1,15 @@
-const Markup = require('telegraf/markup');
+ï»¿const Markup = require('telegraf/markup');
 const Scene = require('telegraf/scenes/base')
 
 
 const mainMenu = new Scene('mainMenu')
 mainMenu.enter(async (ctx) => {
 	ctx.reply(
-		'×¸ ïðèø¸ë â ýòîò ðàç?',
+		'Ð§Ñ‘ Ð¿Ñ€Ð¸ÑˆÑ‘Ð» Ð² ÑÑ‚Ð¾Ñ‚ Ñ€Ð°Ð·?',
 		Markup.inlineKeyboard([
-			Markup.callbackButton('Ðåäàêòèðîâàòü îïðîñ', 'command:edit_poll'),
-			Markup.callbackButton('Íàñòðîéêè', 'command:settings'),
+			[//Markup.callbackButton('Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¾Ð¿Ñ€Ð¾Ñ', 'command:edit_poll'),
+			Markup.callbackButton('Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¾Ð¿Ñ€Ð¾ÑÑ‹', 'command:edit_polls')],
+			[Markup.callbackButton('ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸', 'command:settings')]
 		]).extra()
 	)
 })
@@ -21,6 +22,11 @@ mainMenu.action("command:settings", async (ctx) => {
 mainMenu.action("command:edit_poll", async (ctx) => {
 	await ctx.answerCbQuery()
 	ctx.scene.enter('editPoll')
+})
+
+mainMenu.action("command:edit_polls", async (ctx) => {
+	await ctx.answerCbQuery()
+	ctx.scene.enter('editPolls')
 })
 
 module.exports = mainMenu

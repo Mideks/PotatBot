@@ -1,42 +1,69 @@
-const Markup = require('telegraf/markup');
+п»їconst Markup = require('telegraf/markup');
 const Scene = require('telegraf/scenes/base')
 
 const editPoll = new Scene('editPoll')
 editPoll.enter(async (ctx) => {
-	ctx.editMessageReplyMarkup()
-	await ctx.replyWithPoll(config.data.poll.question, config.data.poll.options, { disable_notification: config.data.poll.disable_notification })
+	await ctx.deleteMessage()
+	const ind = ctx.session.pollIndex ?? 0
+	ctx.session.pollIndex = ind
+	let poll = ctx.config.data.polls[ind]
 
-	await ctx.reply(
-		'Вот так выглядит текущий опрос, пришли новый, чтобы изменить его',
+	ctx.session.pollMessage = await ctx.replyWithPoll(poll.question, poll.options)
+	ctx.session.enterMessage = await ctx.reply(
+		'Р’РѕС‚ С‚Р°Рє РІС‹РіР»СЏРґРёС‚ С‚РµРєСѓС‰РёР№ РѕРїСЂРѕСЃ, РїСЂРёС€Р»Рё РЅРѕРІС‹Р№, С‡С‚РѕР±С‹ РёР·РјРµРЅРёС‚СЊ РµРіРѕ',
 		Markup.inlineKeyboard([
-			Markup.callbackButton('Отмена', 'command:cancel'),
+			Markup.callbackButton('РћС‚РјРµРЅР°', 'command:cancel'),
 		]).extra()
 	)
 })
+editPoll.on('poll', async (ctx, next) => {
+	const poll =
+	{
+		question: ctx.message.poll.question,
+		options: ctx.message.poll.options.map(v => v.text)
+	}
+	ctx.config.data.polls[ctx.session.pollIndex ?? 0] = poll
+	delete ctx.session.pollIndex
 
-editPoll.on("text", (ctx, next) => {
-	ctx.reply(
-		'Ты должен прислать мне опрос, чтобы я скопировал его',
+	const msg = await ctx.reply("РћРїСЂРѕСЃ СЃРѕС…СЂР°РЅС‘РЅ")
+	
+	setTimeout(() => {
+		const pollMessage = ctx.session.pollMessage
+		const enterMessage = ctx.session.enterMessage
+
+		ctx.deleteMessage()
+		ctx.telegram.deleteMessage(msg.chat.id, msg.message_id)
+		ctx.telegram.deleteMessage(pollMessage.chat.id, pollMessage.message_id)
+		ctx.telegram.deleteMessage(enterMessage.chat.id, enterMessage.message_id)
+
+		delete ctx.session.pollMessage
+		delete ctx.session.enterMessage
+	}, 2000)
+	
+	ctx.scene.enter("editPolls")
+})
+
+editPoll.on("message", async (ctx, next) => {
+	const msg = await ctx.reply(
+		'РўС‹ РґРѕР»Р¶РµРЅ РїСЂРёСЃР»Р°С‚СЊ РјРЅРµ РѕРїСЂРѕСЃ, С‡С‚РѕР±С‹ СЏ СЃРєРѕРїРёСЂРѕРІР°Р» РµРіРѕ',
 		Markup.inlineKeyboard([
-			Markup.callbackButton('Отмена', 'command:cancel'),
+			Markup.callbackButton('РћС‚РјРµРЅР°', 'command:cancel'),
 		]).extra()
 	)
+	setTimeout(() => {
+		ctx.telegram.deleteMessage(msg.chat.id, msg.message_id)
+    }, 2000)
 	next()
 })
 
-editPoll.on('poll', async (ctx, next) => {
-	config.data.poll.question = ctx.message.poll.question
-	config.data.poll.options = ctx.message.poll.options.map(v => v.text)
-
-	await ctx.reply("Опрос сохранён")
-	ctx.scene.enter("mainMenu")
-})
 
 editPoll.action("command:cancel", async (ctx) => {
 	await ctx.answerCbQuery()
-	await ctx.editMessageReplyMarkup()
-	await ctx.reply("Отменяем редактирование опроса...")
-	ctx.scene.enter("mainMenu")
+	const pollMessage = ctx.session.pollMessage
+	ctx.telegram.deleteMessage(pollMessage.chat.id, pollMessage.message_id)
+	delete ctx.session.pollMessage
+
+	ctx.scene.enter("editPolls")
 })
 
 module.exports = editPoll

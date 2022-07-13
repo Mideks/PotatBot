@@ -6,6 +6,7 @@ const Stage = require('telegraf/stage')
 const Scene = require('telegraf/scenes/base')
 
 const Config = require("./Config")
+const CustomContext = require('./customContext')
 const sendingMode = require('./sendingMode')
 
 const config = new Config();
@@ -13,13 +14,23 @@ config.read()
 
 const stage = new Stage([], {"default": 'mainMenu' })
 stage.register(require('./scenes/mainMenu'))
+
+stage.register(require('./scenes/editPollsMenu'))
+stage.register(require('./scenes/newPoll'))
 stage.register(require('./scenes/editPoll'))
-stage.register(require('./scenes/settings'))
+
+stage.register(require('./scenes/settingsMenu'))
 stage.register(require('./scenes/addingSettings'))
 
 
+
 const bot = new Telegraf(config.data.bot_token);
+//const bot = new Telegraf(config.data.bot_token, { contextType: CustomContext });
 bot.use(session())
+bot.use((ctx, next) => {
+	ctx.config = config
+	next()
+})
 bot.use(stage.middleware())
 
 
@@ -39,11 +50,11 @@ const deleteEndPattern = (ctx) => {
 bot.on("channel_post", async (ctx) => {
 	const pattern = config.data.end_pattern.text
 
-	const mode = config.data.sending_poll.mode
+	const mode = config.data.sending_poll_settings.mode
 	if (mode == sendingMode.never) return;
 	if (mode == sendingMode.allways) await sendPoll(ctx)
 	if (mode == sendingMode.once) {
-		config.data.sending_poll.mode = sendingMode.never
+		config.data.sending_poll_settings.mode = sendingMode.never
 		await sendPoll(ctx)
 	}
 
@@ -80,9 +91,10 @@ bot.on("channel_post", async (ctx) => {
 })
 
 bot.on("message", (ctx, next) => {
-	if (config.data.poll.delete_comments &&
+	if (config.data.sending_poll_settings.delete_comments &&
 		ctx.message.is_automatic_forward &&
-		ctx.message.forward_from_message_id == messageToDeleteID) {
+		ctx.message.forward_from_message_id == messageToDeleteID)
+	{
 		ctx.deleteMessage()
 		messageToDeleteID = null
 	}

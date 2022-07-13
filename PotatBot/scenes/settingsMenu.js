@@ -2,9 +2,9 @@
 const Scene = require('telegraf/scenes/base')
 
 const settingsMenu = (ctx) => {
-	const poll = config.data.poll
-	const commentsText = `${poll.delete_comments ? '✖️' : '✔️'} Комментарии`
-	const notificationsText = `${poll.disable_notification ? '✖️' : '✔️'} Уведомления`
+	const settings = ctx.config.data.sending_poll_settings
+	const commentsText = `${settings.delete_comments ? '✖️' : '✔️'} Комментарии`
+	const notificationsText = `${settings.disable_notification ? '✖️' : '✔️'} Уведомления`
 
 	return Markup.inlineKeyboard([
 		[
@@ -23,12 +23,12 @@ settings.enter((ctx) => {
 
 settings.action('command:comments', async (ctx) => {
 	await ctx.answerCbQuery()
-	config.data.poll.delete_comments = !config.data.poll.delete_comments
+	ctx.config.data.sending_poll_settings.delete_comments = !ctx.config.data.sending_poll_settings.delete_comments
 	ctx.editMessageReplyMarkup(settingsMenu(ctx))
 })
 settings.action('command:notifications', async (ctx) => {
 	await ctx.answerCbQuery()
-	config.data.poll.disable_notification = !config.data.poll.disable_notification
+	ctx.config.data.sending_poll_settings.disable_notification = !ctx.config.data.sending_poll_settings.disable_notification
 	ctx.editMessageReplyMarkup(settingsMenu(ctx))
 })
 

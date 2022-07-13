@@ -35,18 +35,24 @@
     <Content Include="config.json">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="customContext.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="install.bat" />
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="scenes\addingSettings.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="scenes\editPoll.js" />
+    <Content Include="scenes\editPollsMenu.js" />
     <Content Include="scenes\mainMenu.js">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="scenes\editPoll.js">
+    <Content Include="scenes\newPoll.js">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="scenes\pollSettings.js" />
     <Content Include="scenes\settingsMenu.js">
       <SubType>Code</SubType>
     </Content>

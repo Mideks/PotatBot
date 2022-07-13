@@ -1,19 +1,43 @@
 {
-    "bot_token": "5202023961:AAH4CLk8zfFYCFJS7PoK5zVyk6szc2g7Oqw",
-    "poll": {
-        "question": "че каво",
-        "options": [
-            "tete",
-            "tepteli"
-        ],
-        "disable_notification": true,
-        "delete_comments": true
+  "bot_token": "5202023961:AAH4CLk8zfFYCFJS7PoK5zVyk6szc2g7Oqw",
+  "poll": {
+    "question": "tete",
+    "options": [
+      "no tete 🐱",
+      "tete 🤤"
+    ]
+  },
+  "polls": [
+    {
+      "question": "титоту",
+      "options": [
+        "ква",
+        "мяу"
+      ]
     },
-    "end_pattern": {
-        "text": "\n!",
-        "for_post_poll": false
+    {
+      "question": "tito?",
+      "options": [
+        "tito! 🤤",
+        "no, tete 🐱"
+      ]
     },
-    "sending_poll": {
-        "mode": "2"
+    {
+      "question": "бдыщ?",
+      "options": [
+        "нет",
+        "да"
+      ]
     }
+  ],
+  "selected_poll": 0,
+  "end_pattern": {
+    "text": "\n!",
+    "for_post_poll": false
+  },
+  "sending_poll_settings": {
+    "mode": "0",
+    "disable_notification": true,
+    "delete_comments": true
+  }
 }
